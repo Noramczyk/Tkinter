@@ -25,6 +25,12 @@ class logSuccess:
         self.window = window
         
         Counter = 0
+        threshold = 1100
+        impactThreshold = 0
+        threshCounter = 0
+        impactCounter = 0
+        threshTot = 0
+
         size = 0.3	
         yVal = 800 
 
@@ -35,14 +41,13 @@ class logSuccess:
         
         menubar = Menu(window)
         window.config(menu=menubar)
-        window.geometry("1200x700")                                    # Set overall size of screen
+        window.geometry("1500x1500")                                    # Set overall size of screen
 
         fileMenu = Menu(menubar)
         fileMenu.add_command(label="Exit", command = window.quit)
         menubar.add_cascade(label="Menu", menu = fileMenu)
 
-        vals=np.array([[10.,10.],[80.,80.],[10.,10.]])                  # Pie chart mod for # above Threshold
-        vals2=np.array([[20.,20.],[80.,80.],[20.,20.]]) 							
+       						
 		#val2=np.array([[20.,20.],[80.,80.],[20.,20.]]) 
         threshold = 1200
 
@@ -86,7 +91,7 @@ class logSuccess:
                 relief = "sunken",
                 text = "Data Set - Primary")
         l4 = Label(window, 
-                borderwidth = 2,
+                borderwidth = 10,
                 width = 20,
                 bg = "mint cream",
                 relief = "sunken",
@@ -106,7 +111,7 @@ class logSuccess:
 
         R4 = tk.Button(window, 
                 borderwidth = 2,
-                width = 15,
+                width = 20,
                 text = "Clear",
                 bg = "mint cream",
                 command = clear)
@@ -117,17 +122,17 @@ class logSuccess:
                 bg = "mint cream",
                 command = setFunc)
 
-        l1.grid(row = 1, column = 0, pady = 10)
-        l2.grid(row = 2, column = 0, pady = 10)
-        l3.grid(row = 3, column = 0, pady = 10)
-        l4.grid(row = 4, column = 0, pady = 10)
+        l1.grid(row = 1, column = 2, pady = 5)                  
+        l2.grid(row = 2, column = 2, pady = 5)
+        l3.grid(row = 3, column = 2, pady = 5)
+        l4.grid(row = 4, column = 2, pady = 5)
 
-        R2.grid(row = 1, column = 3, pady = 10)
+        R2.grid(row = 1, column = 6, pady = 10)
         #E1.grid(row = 3, column = 2, pady = 10)
-        R4.grid(row = 4, column = 3, pady = 20)
+        R4.grid(row = 4, column = 6, pady = 20)
 
-        checkbutton.grid(row = 2, column = 3, pady = 10)
-        setThreshold.grid(row = 3, column = 3, pady = 10)
+        checkbutton.grid(row = 2, column = 6, pady = 10)
+        setThreshold.grid(row = 3, column = 6, pady = 10)
 
         
         y = []
@@ -140,35 +145,71 @@ class logSuccess:
                 x.append(Counter)
                 if row:
                     Counter += 1
+
+        for i in y:                 #  Number of impacts over set threshold
+            if i > threshold:
+                threshCounter += 1
+                continue
+
+        for i in y:                 #  Number of impacts over ZERO
+            if i > impactThreshold:
+                impactCounter += 1
+                continue
+
+        threshCalc = threshCounter / Counter
+        threshTot = 1 - threshCalc
+
+
+
+        print("Total Above: ", threshCounter)
+        print("Total Impacts: ", impactCounter)
+        print("Total Points: ", Counter)
+        print("Threshold %: ", threshCalc)
+        print("Total Thresh %: ", threshTot)
+        print("Impact Counter: ", impactCounter)
+
+        vals = np.array([[10., 10.], [threshCounter,threshCounter]]) #             Two divided up
+        vals2 = np.array([[50., 50.], [10.,10.]]) # 
+
+        sizesB = [threshCalc, threshTot]
+        labelsB = 'Above %', 'Total %'
+
+        sizesC = [7, 93]
+        labelsC = 'Above %', 'Total %'
+
         
 
-        fig = plt.figure(figsize=(6,5), dpi = 115)                             # Sets Plot Graph Size
-        #window.ax = fig.add_subplot(111, facecolor='#FFFFCC')
-                                                         # initial Threshold Set
+        fig = plt.figure(figsize=(6,7), dpi = 105)                      # Sets graph area size
+    
         #plt.ion()
-        a = fig.add_subplot(413)
+        a = fig.add_subplot(3,1,2)
+        #a.subplots_adjust(bottom=0.1, right=0.8, top=0.9)              # origin: 413 , 341, 344
         a.plot(x,y, label='Loaded from file!')
-        a.plot([0., Counter], [threshold, threshold], "k--")
+        a.plot([0., Counter], [threshold, threshold], "k--")            # Better: 412 , 341, 344  (9,11) 85
         a.set_xlabel('Time')
         a.set_ylabel('Force')
+        
 
-	
+	    
+        b = fig.add_subplot(6,4,1)                    
+        b.set_title("High Activity Peaks", fontsize = 12)
+        b.pie(sizesB, labels=labelsB, autopct='%1.1f%%', colors=outer_colors,
+                    radius=1.2, shadow=True, startangle=180,
+                    wedgeprops=dict(width=size, edgecolor='w'),
+                    textprops={'fontsize': 7})
   
-        b = fig.add_subplot(341)                  #441
-
-        b.pie(vals.sum(axis=1), radius=1, colors=outer_colors,          # Outer plot
-                wedgeprops=dict(width=size, edgecolor='w'))
-
-        c = fig.add_subplot(344)                    #444    
-
-        c.pie(vals2.sum(axis=1), radius=1, colors=outer_colors,         # Outer plot
-                wedgeprops=dict(width=size, edgecolor='w'))
+        c = fig.add_subplot(6,4,2)          
+        c.set_title("Total Recorded Impacts", fontsize = 12)
+        c.pie(sizesC, labels=labelsC, autopct='%1.1f%%', colors=outer_colors,
+                    radius=1.2, shadow=True, startangle=180,
+                    wedgeprops=dict(width=size, edgecolor='w'),
+                    textprops={'fontsize': 7})
 
 
         
         canvas = FigureCanvasTkAgg(fig, master=window)
         canvas.draw()
-        canvas.get_tk_widget().grid(row=1, column=2, rowspan = 4, padx = 50, pady = 5)
+        canvas.get_tk_widget().grid(row=1, column=3, rowspan = 4, padx = 10, pady = 150)      # 1,2,4,50,5
 
                                                                                           # navigation toolbar
         toolbarFrame = Frame(master=window)
