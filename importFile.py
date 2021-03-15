@@ -7,16 +7,24 @@ from tkinter import *
   
 # import filedialog module
 from tkinter import filedialog
+from HexToDec import HexToDec
   
 # Function for opening the 
 # file explorer window
 def browseFiles():
+    """
     filename = filedialog.askopenfilename(initialdir = "/",
                                           title = "Select a File",
                                           filetypes = (("Text files",
                                                         "*.txt*"),
                                                        ("all files",
                                                         "*.*")))
+    """
+    
+    filename = HexToDec(filedialog.askopenfilename(initialdir="/", title="Select a File", # Passes file to the
+                                                   # HexToDec class. Returns filepath of modified file
+                                                  filetypes=(("Text files", "*.txt*"),  # Only pulls txt files
+                                                              ("all files", "*.*"))))
       
     # Change label contents
     label_file_explorer.configure(text="File Opened: "+filename)
