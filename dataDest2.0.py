@@ -12,19 +12,14 @@ import numpy as np
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.widgets import Cursor
 import mysql.connector as db
-from Byte_HexToDec import hexGenerator
+from HexToDec import HexToDec
 import matplotlib.gridspec as gridspec
 from scipy import stats
 import re
-#import pytest_check as check
-#import pytest
-
 
 global newVal
 global line_1
 global line_2
-
-
 """
 tunnelfile = open("ssh.txt", 'r')
 sacUser = tunnelfile.readline()
@@ -73,42 +68,45 @@ def new_window(_class):
     new = tk.Toplevel(main_screen)
     _class(new)
 
-"""
-def check_equal(fileName):              # For unit testing
 
-    eCounter = 0
-    j = 0
-    eX = []
-    eY = []
-    eX2 = []
-    eY2 = []
+def check_equal(fileName):				# For unit testing
 
-    #fileName = simpledialog.askstring(" ", "Enter File name: ")  # FINALLY !!!
-    with open(filename, 'r') as csvfile:  # Set file designation
-        plots = csv.reader(csvfile)
-        for row in plots:
-            eY.append(int(row[0]))  # Using data points as y-axis points
-            eX.append(eCounter)
-            if row:
-                eCounter += 1  # Counting rows in text file and using them for x-axis
+	eCounter = 0
+	j = 0
+	eX = []
+	eY = []
+	eX2 = []
+	eY2 = []
 
-    eY2.append(0)
+	#fileName = simpledialog.askstring(" ", "Enter File name: ")  # FINALLY !!!
+		with open(filename, 'r') as csvfile:  # Set file designation
+            plots = csv.reader(csvfile)
+            for row in plots:
+                eY.append(int(row[0]))  # Using data points as y-axis points
+                eX.append(eCounter)
+                if row:
+                    eCounter += 1  # Counting rows in text file and using them for x-axis
+    y2.append(0)
 
     while j < (len(eY)):
-        j += 1
-        if j % 250 == 0:
-            eY2.append(eY[j])
-            
-    for i in eX:
-        if i % 250 == 0:
-            eMod = i / 250
-            eX2.append(eMod)
+    	j += 1
+    	if j % 250 == 0:
+    		eY2.append(eY[j])
+    		
+    for i in x1:
+    	if i % 250 == 0:
+    		eMod = i / 250
+    		eX2.append(eMod)
+
+    print(" ", y2)
+    print(" ", x2)
+
+    print("xLen: ", len(x2))
+    print("yLen: ", len(y2))
+    print("X: ", xCounter)
+    print("Y: ", yCounter)
 
     return len(eY2)-len(eX2)
-
-#(email.get() != "") and (fname.get() != "") and (lname.get() != "") and (phonenumber.get() != "") and (username.get() != "") and (password.get() != ""):
-
-"""
 
 
 # ---------- Start ---------- User Login --------------------
@@ -190,19 +188,14 @@ def login():
            text="Exit Application",
            command=sys.exit(0)).pack()  # Button to exit app
     """
-    
+
     main_screen.withdraw()
 
 
 # Verifies user login credentials against current list.
 def login_verify():
     global username1
-    global firstName
-    global lastName
-    global email
-    global pList
 
-    pList = []
     username1 = username_verify.get()
     password1 = password_verify.get()
     username_login_entry.delete(0, END)
@@ -230,9 +223,8 @@ def login_verify():
     if username1 in list_of_files:  # if username is found
         file1 = open(username1, "r")
         verify = file1.read().splitlines()
-        email = file1.read().splitlines()
         if password1 in verify:  # if password is found
-             # logSuccess()                               # Calls function with verification
+            # logSuccess()                               # Calls function with verification
             # new_window(logSuccess)                     # Class call for valid entry
             importFile()  # Call importFile for option for file destination
 
@@ -241,15 +233,6 @@ def login_verify():
 
     else:
         user_not_found()  # calls user_not_found
-
-   
-    pList = verify              # Copy file data into list to be used for data designations
-    email = pList[3]
-    firstName = pList[6]
-    lastName = pList[7]
-    print(email)
-    print(firstName)
-    print(lastName)
 
 
 # Login Success.
@@ -265,7 +248,7 @@ class logSuccess:
 
         highThreshold = 0
         lowThreshold = 0
-        impactThreshold = 45
+        impactThreshold = 0
         highthreshCounter = 0
         lowthreshCounter = 0
         impactCounter = 0
@@ -277,18 +260,12 @@ class logSuccess:
         secCounter = 0
         index = 0
         intIndex = 0
-
-        jrkCalc = 0
-        rofCalc = 0
-
-        yTotal = 0
+        jerkCalc = 0
         rofD = 0
         foP = 0
         j = 0
-        #jrkCalc = 0
-        #rofCalc = 0
 
-        size = 0.3          # Pie Chart size
+        size = 0.3			# Pie Chart size
         yVal = 800
 
         patientFname = "John"
@@ -302,52 +279,7 @@ class logSuccess:
         window.config(menu=menubar)
         window.geometry("1700x1500")  # Set overall size of screen
 
-        def change_password(): #Lets the user change the password
-            global change_pass
-            change_pass = Toplevel(main_screen)
-            change_pass.title("Change Password")
-            change_pass.geometry("250x150")
-
-            new_pass_text = StringVar()
-            global new_password
-
-            Label(change_pass, text=" New Password").pack()
-            new_password = Entry(change_pass, textvariable=new_pass_text)
-            new_password.pack()
-            Label(change_pass, text="").pack()
-
-            Button(change_pass, text="OK", width=10, height=1, command=password_change).pack()
-
-        def password_change(): #System finds file of user and changes the password
-            new_pass = new_password.get()
-            user_name = pList[1]
-            password_old = pList[2]
-            new_password.delete(0, END)
-
-            list_of_files = os.listdir()
-            if user_name in list_of_files:
-                file = open(user_name, "rt")
-                data = file.read()
-                data = data.replace(password_old, new_pass)
-                file.close()
-                file = open(user_name, "wt")
-                file.write(data)
-                file.close()
-
-            pList[2] = new_pass
-            change_pass.destroy()
-
-        def saveInput():
-            userInput = A8.get(1.0, "end-1c")
-            lbl.config(text = "Notes Saved")
-            file = open("patientNotes.txt", "a")  # 'a' stands for 'append'
-            file.write("\n")
-            file.write(userInput)
-            file.close()
-
-
         fileMenu = Menu(menubar)  # Sets drop down menu just exit is implemented right now
-        fileMenu.add_command(label="Change Password", command=change_password)
         fileMenu.add_command(label="Exit", command=window.quit)
         menubar.add_cascade(label="Menu", menu=fileMenu)
 
@@ -372,7 +304,7 @@ class logSuccess:
         x = []
         yXa = []
         xXa = []       # List for setting x index labels
-    
+   	
         plt_list = []
 
         with open(filename, 'r') as csvfile:  # Set file designation
@@ -383,7 +315,6 @@ class logSuccess:
                 if row:
                     Counter += 1  # Counting rows in text file and using them for x-axis
    
-       
         for i in y:  # Number of impacts under set threshold
             if i < lowThreshold:
                 lowthreshCounter+= 1
@@ -402,37 +333,34 @@ class logSuccess:
 
         for i in x:  # Number of impacts
             totalCount += 1
+        """
+        index = Counter / 8                 # Counter = total data pts. / 8 is the number of x axis ticks
+        intIndex = (int(index))             # Turn double calc result back to a int
+        
+        for i in x:                            # For loop for setting x-axis tick labels
+            if i % intIndex == 0:               # Every calculated index 
+                xMod.append(int(i / 250))       # append to list and turned into an int
 
-        for i in y:
-            yTotal = i + yTotal
-       
-       
+        second = totalCount / 250
         """
 
-        yXa.append(0)                   # X Axis algorithm for MultiView & Quad Plot View
+        yXa.append(0)
         while j < (len(y)):
-            j += 1
-            if j % 250 == 0:
-                yXa.append(y[j])
-                #yCounter += 1
+        	j += 1
+        	if j % 250 == 0:
+        		yXa.append(y[j])
+        		#yCounter += 1
 
 
         for i in x:
-            if i % 250 == 0:
-                minMod = i / 250
-                xXa.append(minMod)
-                xCounter += 1
-        """
+        	if i % 250 == 0:
+        		minMod = i / 250
+        		xXa.append(minMod)
+        		xCounter += 1
 
         highthreshCalc = highthreshCounter / Counter  # % Calc
         lowthreshCalc = lowthreshCounter / Counter # % Calc
         threshTot = lowthreshCounter+lowthreshCounter
-
-        avgNewtons = (round(yTotal / totalCount, 4))            # Average Newton Calc
-
-
-        #seconds = totalCount / 250                 #depending on dataSet!!!!
-        seconds = totalCount 
 
         print("Total Above: ", highthreshCounter)  # Output to make sure everything is right
         print("Total Below: ", lowthreshCounter)  # Output to make sure everything is right
@@ -443,9 +371,7 @@ class logSuccess:
         print("Total Thresh %: ", threshTot)
         print("Impact Counter: ", impactCounter)
         print("Total Count: ", totalCount)
-        print("Y sum: ", yTotal)
-        print("Avg Newtons: ", avgNewtons)      # Rounding action!
-        print("Seconds: ", seconds)
+        #print("Seconds total: ", second)
 
         #assert 0
 
@@ -453,11 +379,11 @@ class logSuccess:
         vals3 = np.array([[10., 10.], [lowthreshCounter, lowthreshCounter]])  # Setting pie chart %
         vals2 = np.array([[50., 50.], [10., 10.]])  #
 
-        sizesB = [highthreshCalc, lowthreshCalc, (threshTot)]  # Setting pie b (Threshold) chart labels
-        labelsB = 'Above Upper', 'Below Lower', 'Ideal Force'
+        sizesB = [highthreshCalc, lowthreshCalc, (impactCounter - threshTot)]  # Setting pie b (Threshold) chart labels
+        labelsB = '% Above', '% Below', 'Total %'
 
-        sizesC = [20, 20, 60]  # Setting pie c (Impact) chart labels
-        labelsC = 'Above Upper', 'Below Lower', 'Ideal Force'
+        sizesC = [7, 93]  # Setting pie c (Impact) chart labels
+        labelsC = 'Above %', 'Total %'
 
       
 
@@ -478,7 +404,7 @@ class logSuccess:
           
             highThreshold = simpledialog.askinteger(" ", "Enter upper value: ")  # FINALLY !!!
             lowThreshold = simpledialog.askinteger(" ", "Enter lower value: ")  # FINALLY !!!
-            
+
             print("In replot....")
 
             with open(filename, 'r') as csvfile:  # Re-set file designation
@@ -507,7 +433,6 @@ class logSuccess:
             for i in x:  # Number of impacts
                 totalCount += 1
                 continue
-                            
 
             highthreshCalc = highthreshCounter / Counter  # % Calc
             lowthreshCalc = lowthreshCounter / Counter  # % Calc
@@ -532,16 +457,16 @@ class logSuccess:
             vals2 = np.array([[50., 50.], [10., 10.], [100., 100.]])  #
 
             #sizesB = [highthreshCalc, lowthreshCalc, (impactCounter - threshTot)]  # Setting pie b (Threshold) chart labels
-            sizesB = [highthreshCalc, lowthreshCalc, (threshTot)]  # Setting pie b (Threshold) chart labels
-            labelsB = 'Above Upper', 'Below Lower', 'Ideal Force'
+            sizesB = [highthreshCalc, lowthreshCalc, threshTot]  # Setting pie b (Threshold) chart labels
+            labelsB = '% Above', '% Below', "% Total "
 
-            sizesC = [20, 20, 60]  # Setting pie c (Impact) chart labels
-            labelsC = 'Above Upper', 'Below Lower', 'Ideal Force'
+            sizesC = [7, 93]  # Setting pie c (Impact) chart labels
+            labelsC = 'Above %', 'Total %'
 
             #plt.ion()
 
-            fig4 = plt.figure(figsize=(4, 3), dpi=90)  # dpi zooms out and in with a change of value
-            fig5 = plt.figure(figsize=(4, 3), dpi=90)  # dpi zooms out and in with a change of value
+            fig4 = plt.figure(figsize=(4, 3), dpi=95)  # dpi zooms out and in with a change of value
+            fig5 = plt.figure(figsize=(4, 3), dpi=95)  # dpi zooms out and in with a change of value
 
             rePlot = fig4.add_subplot(1, 1, 1)  # Pie chart for client
             rePlot.set_title("Activity Peaks", fontsize=12) 
@@ -549,7 +474,7 @@ class logSuccess:
                        # startangle sets starting point of % divisions
                        radius=1.2, shadow=True, startangle=180,  # colors are random right now calling outer_colors
                        wedgeprops=dict(width=size, edgecolor='w'),
-                       textprops={'fontsize': 8})
+                       textprops={'fontsize': 12})
             
 
             rePlotPV = fig5.add_subplot(1, 1, 1)  # Pie chart for client
@@ -557,7 +482,7 @@ class logSuccess:
             rePlotPV.pie(sizesB, labels=labelsB, autopct='%1.1f%%', colors=outer_colors,
                          radius=1.2, shadow=True, startangle=180,  # colors are random right now calling outer_colors
                          wedgeprops=dict(width=size, edgecolor='w'),
-                         textprops={'fontsize': 8})
+                         textprops={'fontsize': 12})
             
 
             canvasRP = FigureCanvasTkAgg(fig4, master=splitView)
@@ -614,7 +539,7 @@ class logSuccess:
                 line.remove()
 
             if not line_1:  # Checks empty list, and if true, plots the graph.
-                line_1 = a.plot([0., Counter], [highThreshold, highThreshold], "k--")
+                line_1 = a.plot([0., xCounter], [highThreshold, highThreshold], "k--")
 
             if line_2:  # For Analysis View
                 line = line_2.pop(0)
@@ -629,7 +554,7 @@ class logSuccess:
                 line.remove()
 
             if not line_3:  # Checks empty list, and if true, plots the graph.
-                line_3 = a.plot([0., Counter], [lowThreshold, lowThreshold], "k--")
+                line_3 = a.plot([0., xCounter], [lowThreshold, lowThreshold], "k--")
 
             if line_4:  # For Analysis View
                 line = line_4.pop(0)
@@ -648,9 +573,9 @@ class logSuccess:
             global line_3
             global line_4
 
-            line_1 = a.plot([0., Counter], [highThreshold, highThreshold], "k--")  # plots threshold line, assigns to list
+            line_1 = a.plot([0., xCounter], [highThreshold, highThreshold], "k--")  # plots threshold line, assigns to list
             line_2 = av.plot([0., Counter], [highThreshold, highThreshold], "k--")  # plots threshold line, to Analysis View
-            line_3 = a.plot([0., Counter], [lowThreshold, lowThreshold], "k--")  # plots threshold line, assigns to list
+            line_3 = a.plot([0., xCounter], [lowThreshold, lowThreshold], "k--")  # plots threshold line, assigns to list
             line_4 = av.plot([0., Counter], [lowThreshold, lowThreshold], "k--")  # plots threshold line, to Analysis View
             
 
@@ -682,8 +607,6 @@ class logSuccess:
 
             xMV = []
             yMV = []
-            xS = []
-            yS = []
             x1 = []
             y1 = []
             x2 = []
@@ -694,7 +617,6 @@ class logSuccess:
             y4 = []
         
             Counter = 0
-            jM = 0
 
             with open(filename, 'r') as csvfile:  # Re-set file designation
                 plots = csv.reader(csvfile)
@@ -703,23 +625,7 @@ class logSuccess:
                     xMV.append(Counter)
                     if row:
                         Counter += 1  # Counting rows in text file and using them for x-axis
-
-            """
-            yS.append(0)                   # X Axis algorithm for MultiView & Quad Plot View
-            while jM < (len(yMV)):
-                jM += 1
-                if jM % 250 == 0:
-                    yS.append(yMV[jM])
-                    #yCounter += 1
-
-
-            for i in xMV:
-                if i % 250 == 0:
-                    minModM = i / 250
-                    xS.append(minModM)
-                    #xCounter += 1
-            """
-
+          
             s1 = simpledialog.askinteger(" ", "Enter Graph 1 start value: ")  
             f1 = simpledialog.askinteger(" ", "Enter Graph 1 end value: ")
             s2 = simpledialog.askinteger(" ", "Enter Graph 2 start value: ")  
@@ -729,14 +635,14 @@ class logSuccess:
             s4 = simpledialog.askinteger(" ", "Enter Graph 4 start value: ")  
             f4 = simpledialog.askinteger(" ", "Enter Graph 4 end value: ")
             
-            s1Mult = s1 
-            f1Mult = f1 
-            s2Mult = s2 
-            f2Mult = f2 
-            s3Mult = s3 
-            f3Mult = f3 
-            s4Mult = s4 
-            f4Mult = f4 
+            s1Mult = s1 * 250
+            f1Mult = f1 * 250
+            s2Mult = s2 * 250
+            f2Mult = f2 * 250
+            s3Mult = s3 * 250
+            f3Mult = f3 * 250
+            s4Mult = s4 * 250
+            f4Mult = f4 * 250
            
             x1 = (xMV[s1Mult:f1Mult])         # List slicing!!
             y1 = (yMV[s1Mult:f1Mult]) 
@@ -745,7 +651,7 @@ class logSuccess:
             x3 = (xMV[s3Mult:f3Mult])         
             y3 = (yMV[s3Mult:f3Mult])
             x4 = (xMV[s4Mult:f4Mult])         
-            y4 = (yMV[s4Mult:f4Mult])
+            y4 = (yMV[s4Mult:f4Mult]) 
 
             figMV = plt.figure(constrained_layout=True)
             figMV.set_figheight(5)
@@ -760,14 +666,12 @@ class logSuccess:
             ax3 = figMV.add_subplot(specMV[2])
             ax4 = figMV.add_subplot(specMV[3])
 
-            ax1.set_xlabel('Time(seconds)', fontsize=8)  # Set X axis title
-            ax1.set_ylabel('Force in Newtons', fontsize=8)  # Set Y axis title
-            ax2.set_xlabel('Time(seconds)', fontsize=8)  # Set X axis title
-            ax2.set_ylabel('Force in Newtons', fontsize=8)  # Set Y axis title
-            ax3.set_xlabel('Time(seconds)', fontsize=8)  # Set X axis title
-            ax3.set_ylabel('Force in Newtons', fontsize=8)  # Set Y axis title
-            ax4.set_xlabel('Time(seconds)', fontsize=8)  # Set X axis title
-            ax4.set_ylabel('Force in Newtons', fontsize=8)  # Set Y axis title
+            #ax1.set_xticks((s1, f1))
+            #ax2.set_xticks((s2, f2))
+            ax1.set_xticklabels((s1, f1))
+            ax2.set_xticklabels((s2, f2))
+            ax3.set_xticklabels((s3, f3))
+            ax4.set_xticklabels((s4, f4))
             
             ax1.plot(x1, y1, color='darkorange')
             ax2.plot(x2, y2, color='forestgreen')
@@ -783,6 +687,9 @@ class logSuccess:
   
         def primSec(): 
 
+            #fig1.clear()
+            #figAV.clear()
+            
             secCounter = 0
             Counter = 0
             j1 = 0
@@ -797,17 +704,8 @@ class logSuccess:
             x2A = []
             y2A = []
 
-            fileone = hexGenerator(filedialog.askopenfilename(initialdir="/", title="Select a File", # Passes file to the
-                                                   # HexToDec class. Returns filepath of modified file
-                                                  filetypes=(("Text files", "*.txt*"),  # Only pulls txt files
-                                                              ("all files", "*.*"))))
-          
-            if os.stat(fileone).st_size == 0:  # If file is not null open main class else no go!
-               print('File is empty')
-
-            else:
-               print('File is not empty')
-               print(fileone)
+            fileone = simpledialog.askstring(" ", "Enter File name: ")  # FINALLY !!!
+            filetwo = simpledialog.askstring(" ", "Enter File name: ")  # FINALLY !!!
 
             with open(fileone, 'r') as csvfile:  # Set file designation
                 plots1 = csv.reader(csvfile)
@@ -816,45 +714,73 @@ class logSuccess:
                     x1.append(Counter)
                     if row:
                         Counter += 1  # Counting rows in text file and using them for x-axis
-          
-      
-            a.plot(x1, y1, color="r")
-            ax.plot(x1, y1, color="r")
-            ax1.plot(x1, y1, color="r")   
-            ax2.plot(x1, y1, color="r") 
-            ax3.plot(x1, y1, color="r")
-            ax4.plot(x1, y1, color="r")  
-            #a.plot(x2A, y2A, color="g")
-            #av.plot(x1, y1, color="r") 
-            #av.plot(x2, y2, color="b")
+                                
+            with open(filetwo, 'r') as csvfile:  # Set file designation
+                plots2 = csv.reader(csvfile)
+                for row in plots2:
+                    y2.append(int(row[0]))  # Using data points as y-axis points
+                    x2.append(secCounter)
+                    if row:
+                        secCounter += 1  # Counting rows in text file and using them for x-axis
+
+            y1A.append(0)
+            while j1 < (len(y1)):
+            	j1 += 1
+            	if j1 % 250 == 0:
+            		y1A.append(y1[j1])
+            		
+            for i in x1:
+            	if i % 250 == 0:
+            		minMod1 = i / 250
+            		x1A.append(minMod1)
+
+            y2A.append(0)
+            while j2 < (len(y2)):
+            	j2 += 1
+            	if j2 % 250 == 0:
+            		y2A.append(y2[j2])
+          		
+            for i in x2:
+            	if i % 250 == 0:
+            		minMod2 = i / 250
+            		x2A.append(minMod2)	
+            
+            a.plot(x1A, y1A, color="r") 
+            a.plot(x2A, y2A, color="g")
+            av.plot(x1, y1, color="r") 
+            av.plot(x2, y2, color="b")
                  
             canvas1b = FigureCanvasTkAgg(fig1, master=splitView)
-            #splitView.cursor = Cursor(a, useblit=True, color='red', linewidth=2)  # Used for Analysis graph cursor
+            splitView.cursor = Cursor(a, useblit=True, color='red', linewidth=2)  # Used for Analysis graph cursor
             canvas1b.draw()
             canvas1b.get_tk_widget().grid(row=1, column=3, rowspan=4, padx=10,
                                                  pady=150)
-       
-            canvasMVS = FigureCanvasTkAgg(figMVS, master=multiView)
-            #multiView.cursor = Cursor(figMV, useblit=True, color='red', linewidth=2)
-            canvasMVS.draw()
-            canvasMVS.get_tk_widget().grid(row=2, column=4, rowspan=2, padx=10,
+
+            canvas1 = FigureCanvasTkAgg(figAV, master=analysisView)
+            analysisView.cursor = Cursor(av, useblit=True, color='red', linewidth=2)
+            canvas1.draw()
+            canvas1.get_tk_widget().grid(row=1, column=3, rowspan=4, padx=10,
                                          pady=10)
 
-            canvasMV = FigureCanvasTkAgg(figMV, master=multiView)
-            #multiView.cursor = Cursor(figMV, useblit=True, color='red', linewidth=2)
-            canvasMV.draw()
-            canvasMV.get_tk_widget().grid(row=2, column=0, rowspan=2, padx=10,
-                                         pady=10)
-         
+            figAV.canvas.mpl_connect('pick_event', onpick)
+            # Setting positions of Analysis graph
+            lineA1, = av.plot(x1, y1,'o',picker=0.01)  # 5 points tolerance         # For Force @ a point click event
+            lineA2, = av.plot(x2, y2,'o',picker=0.01)  # 5 points tolerance         # For Force @ a point click event
+
+            toolbarFrame = Frame(master=splitView)
+            toolbarFrame.grid(row=4, column=3)
+            toolbar = NavigationToolbar2Tk(canvas1b, toolbarFrame)
+
+            toolbarFrame = Frame(master=analysisView)
+            toolbarFrame.grid(row=7, column=3)
+            toolbar = NavigationToolbar2Tk(canvas1, toolbarFrame)
+            
 
         def setPrim():
 
             importFile()
         
         def setJerk():
-
-            jerkCalc = 0
-            roFCalc = 0
 
             lineX = []
             lineY = []
@@ -863,7 +789,6 @@ class logSuccess:
             x2 = []
             y2 = []
 
-                                                # Peak / Δt || j = ( ae - a0 ) / t
             lineCounter = 0
 
             with open(filename, 'r') as csvfile:  # Re-set file designation
@@ -878,31 +803,8 @@ class logSuccess:
             end = simpledialog.askinteger(" ", "Enter end value: ")
 
             xJ1 = (lineX[start:end])         # List slicing!!
-            yJ1 = (lineY[start:end])
+            yJ1 = (lineY[start:end]) 
 
-
-            startCalc = lineX[start] / 250
-            endCalc = lineX[end] / 250
-
-            timeSec = endCalc - startCalc
-            yDiff = lineY[end] - lineY[start]
-            timeDiff = end - start
-
-            jerkCalc = yDiff / timeDiff
-            roFCalc = lineY[end] / timeDiff
-            
-            print("Y start: ", lineY[start])
-            print("Y end: ", lineY[end]) 
-            print("Time diff: ", timeDiff)
-            print(startCalc)
-            print(endCalc)
-            print("In sec: ", timeSec)
-            print("Y diff: ", yDiff)
-            print("Jerk: ", (round (jerkCalc, 3)))
-            print("ROF: ", (round (roFCalc, 3)))
-
-
-            """
             arrJX = np.array(xJ1)     # Convert list into array for slope line CALC
             arrJY = np.array(yJ1)
 
@@ -915,48 +817,75 @@ class logSuccess:
             avj.plot(arrJX, arrJY, 'o', label="Jerk:%r "%(round(res.slope,4)))
             avj.plot(arrJX, res.intercept + res.slope*arrJX, 'r', label='fitted line')
             avj.legend()
-            """
+            
+            avj.set_title('Jerk', fontsize=15)
 
-            A9 = Label(analysisView,
-                    relief="flat",
-                    bg="mint cream",
-                    text= "Jerk: \n(End ACC - Start ACC / Δt )\n %r"%(round(jerkCalc,2)),
-                    font="bold")
+            canvasAVJ = FigureCanvasTkAgg(figAVJ, master=analysisView)
+            canvasAVJ.draw()
+            canvasAVJ.get_tk_widget().grid(row=1, column=0, rowspan=1, padx=20,
+                                         pady=10)
+        def setROF():
 
-        
-            A10 = Label(analysisView,
-                    relief="flat",
-                    bg="mint cream",
-                    text= "Rate of Force:\n(Peak Force / Δt)\n %r"%(round(roFCalc,2)),
-                    font="bold")
+            lineXR = []
+            lineYR = []
+            xR1 = []
+            yR1 = []
+            x2 = []
+            y2 = []
 
-         
+            lineCounterROF = 0
 
-            A9.grid(row=1, column=0, pady=2)        # Jerk Label
-            A10.grid(row=3, column=0, pady=2)       # ROF Lable
-      
-          
+            with open(filename, 'r') as csvfile:  # Re-set file designation
+                plots = csv.reader(csvfile)
+                for row in plots:
+                    lineYR.append(int(row[0]))  # Using data points as y-axis points
+                    lineXR.append(lineCounterROF)
+                    if row:
+                        lineCounterROF += 1  # Counting rows in text file and using them for x-axis
+
+            startR = simpledialog.askinteger(" ", "Enter start value: ")  
+            endR = simpledialog.askinteger(" ", "Enter end value: ")
+
+            xR1 = (lineXR[startR:endR])         # List slicing!!
+            yR1 = (lineYR[startR:endR]) 
+
+            arrRX = np.array(xR1)     # Convert list into array for slope line CALC
+            arrRY = np.array(yR1)
+
+            resROF = stats.linregress(xR1, yR1)       # Calc performed on sub-array
+
+            figAVR = plt.figure(figsize=(4, 3), dpi=85)
+
+            avr = figAVR.add_subplot(1, 1, 1)
+    
+            avr.plot(arrRX, arrRY, 'o', label="Rate of Force:%r "%(round(resROF.slope,4)))
+            avr.plot(arrRX, resROF.intercept + resROF.slope*arrRX, 'r', label='fitted line')
+            avr.legend()
+            
+            avr.set_title('Rate of Force', fontsize=15)
+
+            canvasAVR = FigureCanvasTkAgg(figAVR, master=analysisView)
+            canvasAVR.draw()
+            canvasAVR.get_tk_widget().grid(row=3, column=0, rowspan=1, padx=20,
+                                         pady=10)
+
+
+
+            
        # Split View ***************************************       
 
-        #patient_username_info = username.get()
-        #patient_username_info = username.get()
-        #file = open(patient_username_info, "r")  # creates file with a user name and password
-        #first = read(patient_fname_info)
-        #file.write(lname_info + "\n")
 
         l1 = Label(splitView,
                    text="Above Threshold: ",
                    font="bold")
     
-        l2 = Label(splitView,
-                    relief="flat",
-                    bg="mint cream",
-                    text= "Name:  %s %s\nEmail: %s"%(firstName, lastName, email),
-                    font="bold")
-                    
+        l2 = Button(splitView,
+                    text="Patient ID - Name: ",
+                    font="bold",
+                    command=patientSelection)
 
         l3 = tk.Button(splitView,
-                   text="Set Secondary Data",
+                   text="Set Primary & Secondary Data",
                    font="bold",
                    command=primSec)
         
@@ -993,9 +922,11 @@ class logSuccess:
                    text=lowthreshCounter)
 
         R5 = Label(splitView,
+                   borderwidth=10,
+                   width=15,
                    relief="flat",
                    bg="mint cream",
-                   text="Email: %s"%email)
+                   text=(patientFname + " " + patientLname))
 
         R6 = Label(splitView,
                    borderwidth=10,
@@ -1018,7 +949,7 @@ class logSuccess:
 
         R3.grid(row=0, column=5, pady=2)
         R4.grid(row=1, column=5, pady=2)
-        #R5.grid(row=1, column=0, pady=2)
+        R5.grid(row=1, column=0, pady=2)
         R6.grid(row=3, column=5, pady=2)
 
 
@@ -1059,11 +990,15 @@ class logSuccess:
                                    command=setFunc)  # command calls any function you want (setFunc, clear
 
         setJerkAV = tk.Button(analysisView,
-                           text="Set Jerk & Rate of Force Range",
+                           text="Set Jerk Range",
                            bg="mint cream",
                            command=setJerk)
 
-   
+        setROFAV = tk.Button(analysisView,
+                           text="Set Rate of Force Range",
+                           bg="mint cream",
+                           command=setROF)
+  
         A5 = Label(analysisView,
                     text="Force at point: ",
                     font="bold")
@@ -1074,50 +1009,31 @@ class logSuccess:
                     relief="flat",
                     bg="mint cream",
                     text=foP)
-   
-
-        lbl = Label(main_screen, text = "")                 # Used with A7 & A8 to create a savable text box
-
-        A7 = tk.Button(analysisView,
-                        text = "Click to Save Patient Notes", 
-                        command = saveInput)
-
+        
+        A7 = Label(analysisView,
+                    text="Patient Notes",
+                    font="bold")             #creates the header for Patient notes
 
         A8 = Text(analysisView,
                     relief="flat",
                     bg="mint cream",
                     height=15,
                     width=45)                 #creates the text box for patient notes
-        
-        A9 = Label(analysisView,
-                    relief="flat",
-                    bg="mint cream",
-                    text= "Jerk: \n(End ACC - Start ACC / Δt )\n %r"%(jrkCalc),
-                    font="bold")
 
-        
-        A10 = Label(analysisView,
-                    relief="flat",
-                    bg="mint cream",
-                    text= "Rate of Force:\n(Peak Force / Δt)\n %r"%(rofCalc),
-                    font="bold")
-
-      
+          
 
         A1.grid(row=4, column=4, pady=2)        # Points above text
         A2.grid(row=5, column=4, pady=2)        # Points Below text
         A3.grid(row=4, column=5, pady=2)        # High thresh counter
         A4.grid(row=5, column=5, pady=2)        # Low thresh counter
-        A5.grid(row=3, column=4, pady=2)        # Force at a point
-        A6.grid(row=3, column=5, pady=2)        # foP
-        A7.grid(row=0, column=4, pady=2)        # Patient notes
-        A8.grid(row=1, column=4, pady=2)        # Text box
-        A9.grid(row=1, column=0, pady=2)        # Jerk Label
-        A10.grid(row=3, column=0, pady=2)       # ROF Lable
+        A5.grid(row=3, column=4, pady=2)       # Force at a point
+        A6.grid(row=3, column=5, pady=2)       # foP
+        A7.grid(row=0, column=4, pady=2)       # Patient notes
+        A8.grid(row=1, column=4, pady=2)       # Text box
         
         setThresholdAV.grid(row=4, column=3, pady=5)
         setJerkAV.grid(row=0, column=0, pady=5)
-        
+        setROFAV.grid(row=2, column=0, pady=5)
 
         # Patient View ***********************************************************
 
@@ -1134,7 +1050,7 @@ class logSuccess:
                    width=15,
                    relief="flat",
                    bg="mint cream",
-                   text="Time period:\n%r"%seconds,
+                   text="Time period\n%r"%seconds,
                    font="bold")
 
         p3 = Label(patientView,
@@ -1142,7 +1058,7 @@ class logSuccess:
                    width=15,
                    relief="flat",
                    bg="mint cream",
-                   text="Average Newtons:\n%r"%avgNewtons,
+                   text="Average Newtons",
                    font="bold")
 
         p4 = Label(patientView,
@@ -1163,7 +1079,7 @@ class logSuccess:
 
         m1 = Label(multiView,
                     text="Multiple Plot View ",
-                    font=("bold", 20))
+                    font="bold")
 
         m2 = Label(multiView,
                     text=" ",
@@ -1182,7 +1098,7 @@ class logSuccess:
         # Graph Setup   **********************************************************
 
   
-        fig1 = plt.figure(figsize=(7, 6), dpi=90)  # Instances of individual figures for alignment
+        fig1 = plt.figure(figsize=(7, 6), dpi=95)  # Instances of individual figures for alignment
         figAV = plt.figure(figsize=(7, 6), dpi=90)  # Analysis View fig
         figAVJ = plt.figure(figsize=(4, 3), dpi=85)
         figAVR = plt.figure(figsize=(4, 3), dpi=85)
@@ -1192,22 +1108,22 @@ class logSuccess:
         figMV.set_figheight(5)
         figMV.set_figwidth(5)
 
-        fig2 = plt.figure(figsize=(4, 3), dpi=90)  # figsize sets overall size of each figure
-        fig3 = plt.figure(figsize=(4, 3), dpi=90)  # dpi zooms out and in with a change of value
+        fig2 = plt.figure(figsize=(4, 3), dpi=95)  # figsize sets overall size of each figure
+        fig3 = plt.figure(figsize=(4, 3), dpi=95)  # dpi zooms out and in with a change of value
 
         specMVS = figMVS.add_subplot(1, 1, 1)
         specMV = gridspec.GridSpec(ncols=2, nrows=2, figure=figMV,
-                        width_ratios=[10, 10], wspace=0.5,
-                        hspace=0.5, height_ratios=[10, 10])
+                        width_ratios=[8, 8], wspace=0.5,
+                        hspace=0.5, height_ratios=[8, 8])
 
   
         a = fig1.add_subplot(1, 1, 1)  # Analysis View Graph plot
         av = figAV.add_subplot(1, 1, 1)  # Analysis View Graph plot
         ax = figMVS.add_subplot(1, 1, 1)  # Mulit View Bottom
-        avj = figAVJ.add_subplot(1, 1, 1)   # Jerk Graph
+        avj = figAVJ.add_subplot(1, 1, 1)	# Jerk Graph
         avr = figAVR.add_subplot(1, 1, 1)    # Rate of Force Graph     
                
-        ax1 = figMV.add_subplot(specMV[0])          # Quad Multi-View plots
+        ax1 = figMV.add_subplot(specMV[0])			# Quad Multi-View plots
         ax2 = figMV.add_subplot(specMV[1])
         ax3 = figMV.add_subplot(specMV[2])
         ax4 = figMV.add_subplot(specMV[3])
@@ -1218,39 +1134,30 @@ class logSuccess:
         ax3.set_xticklabels(xMod)
         ax4.set_xticklabels(xMod)
         """
-        ax1.plot(x, y, color='darkorange')
-        ax2.plot(x, y, color='forestgreen')
-        ax3.plot(x, y, color='darkmagenta')
-        ax4.plot(x, y, color='royalblue')
+        ax1.plot(xXa, yXa, color='darkorange')
+        ax2.plot(xXa, yXa, color='forestgreen')
+        ax3.plot(xXa, yXa, color='darkmagenta')
+        ax4.plot(xXa, yXa, color='royalblue')
 
-        ax.plot(x, y)
+        ax.plot(xXa, yXa)
         avj.plot(x, y)
         avr.plot(x, y)
-        a.plot(x, y)
+        a.plot(xXa, yXa)
         av.plot(x, y)
 
         line, = av.plot(x, y,'o',picker=0.01)  # 5 points tolerance         # For Force @ a point click event
 
         # a.plot([0., Counter], [highThreshold, highThreshold], "k--")            # Plotting threshold designation
         setThreshLine()
-        a.set_xlabel('Time(seconds)', fontsize=15)  # Set X axis title
-        a.set_ylabel('Force in Newtons', fontsize=15)  # Set Y axis title
-        av.set_xlabel('Data Points(seconds)', fontsize=15)  # Set X axis title
-        av.set_ylabel('Force in Newtons', fontsize=15)  # Set Y axis title
-        av.set_title("Data Analysis", fontsize=15)
-        ax.set_xlabel('Time(seconds)', fontsize=15)  # Set X axis title
-        ax.set_ylabel('Force in Newtons', fontsize=15)  # Set Y axis title
+        a.set_xlabel('Time(seconds)')  # Set X axis title
+        a.set_ylabel('Force in Newtons')  # Set Y axis title
+        av.set_xlabel('Data Points')  # Set X axis title
+        av.set_ylabel('Force in Newtons')  # Set Y axis title
+        av.set_title("Data Analysis")
+        ax.set_xlabel('Time(seconds)')  # Set X axis title
+        ax.set_ylabel('Force in Newtons')  # Set Y axis title
         avj.set_title('Jerk', fontsize=15)
         avr.set_title('Rate of Force', fontsize=15)
-
-        ax1.set_xlabel('Time(seconds)', fontsize=8)  # Set X axis title
-        ax1.set_ylabel('Force in Newtons', fontsize=8)  # Set Y axis title
-        ax2.set_xlabel('Time(seconds)', fontsize=8)  # Set X axis title
-        ax2.set_ylabel('Force in Newtons', fontsize=8)  # Set Y axis title
-        ax3.set_xlabel('Time(seconds)', fontsize=8)  # Set X axis title
-        ax3.set_ylabel('Force in Newtons', fontsize=8)  # Set Y axis title
-        ax4.set_xlabel('Time(seconds)', fontsize=8)  # Set X axis title
-        ax4.set_ylabel('Force in Newtons', fontsize=8)  # Set Y axis title
     
         #a.set_xticklabels(xMod)
         a.set_yticks(
@@ -1270,14 +1177,14 @@ class logSuccess:
               # startangle sets starting point of % divisions
               radius=1.2, shadow=True, startangle=180,  # colors are random right now calling outer_colors
               wedgeprops=dict(width=size, edgecolor='w'),
-              textprops={'fontsize': 8})
+              textprops={'fontsize': 12})
 
         c = fig3.add_subplot(1, 1, 1)
         c.set_title("Total Recorded Impacts", fontsize=12)
         c.pie(sizesC, labels=labelsC, autopct='%1.1f%%', colors=outer_colors,
               radius=1.2, shadow=True, startangle=180,
               wedgeprops=dict(width=size, edgecolor='w'),
-              textprops={'fontsize': 10})
+              textprops={'fontsize': 12})
 
         # End pie chart code block for verification.
         # Instances of figs included into a single Canvas
@@ -1288,7 +1195,15 @@ class logSuccess:
         canvas1.get_tk_widget().grid(row=0, column=3, rowspan=4, padx=10,
                                      pady=10)
 
-     
+        canvasAVJ = FigureCanvasTkAgg(figAVJ, master=analysisView)
+        canvasAVJ.draw()
+        canvasAVJ.get_tk_widget().grid(row=1, column=0, rowspan=1, padx=20,
+                                     pady=10)
+
+        canvasAVR = FigureCanvasTkAgg(figAVR, master=analysisView)
+        canvasAVR.draw()
+        canvasAVR.get_tk_widget().grid(row=3, column=0, rowspan=1, padx=20,
+                                     pady=10)
         # Setting positions of Analysis graph
 
         figAV.canvas.mpl_connect('pick_event', onpick)
@@ -1331,14 +1246,14 @@ class logSuccess:
         canvasMVS.draw()
         canvasMVS.get_tk_widget().grid(row=2, column=4, rowspan=2, padx=10,
                                      pady=10)
-        """
+
         # navigational toolbar setup & pos
         toolbarFrame = Frame(master=splitView)
         toolbarFrame.grid(row=4, column=3)
         toolbar = NavigationToolbar2Tk(canvas1b, toolbarFrame)
-        """
+
         toolbarFrame = Frame(master=analysisView)
-        toolbarFrame.grid(row=4, column=3)
+        toolbarFrame.grid(row=0, column=3)
         toolbar = NavigationToolbar2Tk(canvas1, toolbarFrame)
 
         """ 
@@ -1379,7 +1294,7 @@ def user_not_found():
 def register():
     global register_screen
     register_screen = Toplevel(main_screen)
-    register_screen.title(" ")
+    register_screen.title("Doctor Register")
     register_screen.geometry("300x420")
 
     global username  # Globals for patient database
@@ -1411,13 +1326,12 @@ def register():
     username = StringVar()
     password = StringVar()
 
-    Label(register_screen, text="Fill in all Fields to Register", bg="#42e9f5").pack()
+    Label(register_screen, text="Login or Register", bg="#42e9f5").pack()
     Label(register_screen, text="").pack()
     username_lable = Label(register_screen, text="Username * ")
     username_lable.pack()
     username_entry = Entry(register_screen, textvariable=username)
     username_entry.pack()
-    
     password_lable = Label(register_screen, text="Password * ")
     password_lable.pack()
     password_entry = Entry(register_screen, textvariable=password, show='*')
@@ -1443,7 +1357,6 @@ def register():
     fname_lable.pack()
     fname_entry = Entry(register_screen, textvariable=fname)
     fname_entry.pack()
-    
 
     lname_lable = Label(register_screen, text="Last name * ")
     lname_lable.pack()
@@ -1460,8 +1373,8 @@ def register():
            command=register_Doctor).pack()  # calls register_Doctor
 
     Button(register_screen,
-           text="Exit Application")
-           #command=sys.exit(0)).pack()  # Button to exit app
+           text="Exit Application",
+           command=sys.exit(0)).pack()  # Button to exit app
 
 # This method collects the Doctor's info. Then it saves the user's info into a File.
 def register_Doctor():
@@ -1476,43 +1389,14 @@ def register_Doctor():
 
     sql = "insert into TEST (user, num) values (%s, %s)"
     val = ('hello', int(18))
-    
-    if (email.get() != "") and (fname.get() != "") and (lname.get() != "") and (phonenumber.get() != "") and (username.get() != "") and (password.get() != ""):
-        
-        Label(register_screen, text="Registration Success", fg="green", font=("calibri", 11)).pack()
-        file = open(username_info, "w")  # creates file with a user name and password
-        file.write("userID" + "\n")  # need to get a method to create unique user IDs
-        file.write(username_info + "\n")
-        file.write(password_info + "\n")
-        file.write(email_info + "\n")
-        file.write(phonenumber_info + "\n")
-        file.write(website_info + "\n")
-        file.write(fname_info + "\n")
-        file.write(lname_info + "\n")
-        file.write(doctorID_info + "\n")
-        file.write("TRUE")  # true here being for doctor type.
-        file.close()
-
-        username_entry.delete(0, END)
-        password_entry.delete(0, END)
-        email_entry.delete(0, END)
-        phonenumber_entry.delete(0, END)
-        website_entry.delete(0, END)
-        fname_entry.delete(0, END)
-        lname_entry.delete(0, END)
-        doctorID_entry.delete(0, END)
-
-    else:
-        Label(register_screen, text="Registration Error", fg="red", font=("calibri", 11)).pack()
-      
 
     # sql = "insert into TEST (user, num) values (%(users)s, %(number)s)"
     # val = {
     #   'users': 'hello',
     #    'number': 18,
     #    }
-    #db_cursor.execute(sql, val)
-    #cnx.commit()
+    db_cursor.execute(sql, val)
+    cnx.commit()
 
     ##sql = "INSERT INTO DOCTOR (docID, licNum, phone, website) VALUES (%s, %s, %s, %s)"
 
@@ -1528,7 +1412,31 @@ def register_Doctor():
 
     ##db_connection.commit()
 
-  
+    file = open(username_info, "w")  # creates file with a user name and password
+
+    file.write("userID" + "\n")  # need to get a method to create unique user IDs
+
+    file.write(username_info + "\n")
+    file.write(password_info + "\n")
+    file.write(email_info + "\n")
+    file.write(phonenumber_info + "\n")
+    file.write(website_info + "\n")
+    file.write(fname_info + "\n")
+    file.write(lname_info + "\n")
+    file.write(doctorID_info + "\n")
+    file.write("TRUE")  # true here being for doctor type.
+    file.close()
+
+    username_entry.delete(0, END)
+    password_entry.delete(0, END)
+    email_entry.delete(0, END)
+    phonenumber_entry.delete(0, END)
+    website_entry.delete(0, END)
+    fname_entry.delete(0, END)
+    lname_entry.delete(0, END)
+    doctorID_entry.delete(0, END)
+
+    Label(register_screen, text="Registration Success", fg="green", font=("calibri", 11)).pack()
 
     # ----------------------------------------------separator between doctors registration and patient registration------------------
 
@@ -1574,17 +1482,17 @@ def registerPatient():
     # email text and enter box
     patient_email_lable = Label(register_screen, text="Email * ")
     patient_email_lable.pack()
-    patient_email_entry = Entry(register_screen, textvariable=patient_email)
+    patient_email_entry = Entry(register_screen, textvariable=email)
     patient_email_entry.pack()
 
     patient_fname_lable = Label(register_screen, text="First name * ")
     patient_fname_lable.pack()
-    patient_fname_entry = Entry(register_screen, textvariable=patient_fname)
+    patient_fname_entry = Entry(register_screen, textvariable=fname)
     patient_fname_entry.pack()
 
     patient_lname_lable = Label(register_screen, text="Last name * ")
     patient_lname_lable.pack()
-    patient_lname_entry = Entry(register_screen, textvariable=patient_lname)
+    patient_lname_entry = Entry(register_screen, textvariable=lname)
     patient_lname_entry.pack()
 
     Label(register_screen, text="").pack()
@@ -1595,9 +1503,6 @@ def registerPatient():
 
 
 def register_Patient():
-    global patient_fname_info
-    global patient_lname_info
-
     patient_username_info = username.get()
     patient_password_info = password.get()
     patient_email_info = email.get()
@@ -1630,13 +1535,11 @@ def register_Patient():
     file.write("FALSE")  # false here being for being the patient type.
     file.close()
 
-    
     username_entry.delete(0, END)
     password_entry.delete(0, END)
     email_entry.delete(0, END)
     fname_entry.delete(0, END)
     lname_entry.delete(0, END)
-    
 
     Label(register_screen, text="Registration Success", fg="green", font=("calibri", 11)).pack()
 
@@ -1697,8 +1600,8 @@ def patientSelection():
 def browseFiles():
     global filename
     # delete_importFile()         # Clean up import screen
-
-    filename = hexGenerator(filedialog.askopenfilename(initialdir="/", title="Select a File", # Passes file to the
+    """
+    filename = HexToDec(filedialog.askopenfilename(initialdir="/", title="Select a File", # Passes file to the
                                                    # HexToDec class. Returns filepath of modified file
                                                   filetypes=(("Text files", "*.txt*"),  # Only pulls txt files
                                                               ("all files", "*.*"))))
@@ -1709,9 +1612,9 @@ def browseFiles():
                                                           "*.txt*"),
                                                        ("all files",
                                                             "*.*")))
-                                                                                                             
+                                                                                                                 
     fileExplorer.configure(text="File Opened: " + "" + filename)
-    """
+    
 
     if os.stat(filename).st_size == 0:  # If file is not null open main class else no go!
         print('File is empty')
@@ -1746,7 +1649,7 @@ def importFile():
 
     buttonExit = Button(importFile_screen,
                         text="Exit",
-                        command=delete_importFile)          # Exits out of program
+                        command=exit)  # Exits out of program
 
     fileExplorer.grid(column=0, row=1)  # Using grid layout
     buttonExplore.grid(column=0, row=2)

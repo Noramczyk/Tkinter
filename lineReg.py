@@ -4,6 +4,7 @@ import numpy as np
 import math 
 import csv
 from scipy import stats
+import re
 
 """
 (intercept) The intercept (often labeled as constant) is the point where 
@@ -48,6 +49,7 @@ s3 = 6300
 f3 = 6400
 
 Counter = 0
+slope = 0
 
 with open('test1.txt','r') as csvfile:                        # Set file designation
     plots = csv.reader(csvfile)
@@ -70,7 +72,8 @@ arrY = np.array(y3)
 figure, axis = plt.subplots(2, 2) 
 
 res = stats.linregress(x3,y3)		# Calc performed on sub-array
-print(res.slope)					# Average slope CALC
+print(round(res.slope,3))					# Average slope CALC
+slope = res.slope
 
 axis[0, 0].plot(x, y) 
 axis[0, 0].set_title("Force vs. Time")
@@ -79,8 +82,9 @@ axis[0, 1].set_title("Sub-Array")
 axis[0, 1].plot(x3, y3)
 
 axis[1, 0].set_title("Line Regression Model")
-axis[1, 0].plot(arrX, arrY, 'o', label='original data')
+axis[1, 0].plot(arrX, arrY, 'o', label="Jerk:%r "%(round(res.slope,4)))
 axis[1, 0].plot(arrX, res.intercept + res.slope*arrX, 'r', label='fitted line')
+axis[1, 0].legend()
 
 axis[1, 1].plot(x2, y2) 
 axis[1, 1].set_title("Expanded View")

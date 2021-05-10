@@ -6,6 +6,7 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 NavigationToolbar2Tk) 
 import matplotlib.pyplot as plt
 import csv
+import numpy as np
   
 # plot function is created for  
 # plotting the graph in  
@@ -20,19 +21,31 @@ def plot():
     y1 = []
     y2 = []
 
-	
-    fileone = simpledialog.askstring(" ", "Enter File name: ")  # FINALLY !!!
-    filetwo = simpledialog.askstring(" ", "Enter File name: ")  # FINALLY !!!
+    
+
+    # cd Desktop/Python plotFunc.py
+
+	#values = range(len(x))
+
+    #fileone = simpledialog.askstring(" ", "Enter File name: ")  # FINALLY !!!
+    #filetwo = simpledialog.askstring(" ", "Enter File name: ")  # FINALLY !!!
 
 
-    with open(fileone, 'r') as csvfile:  # Set file designation
+    with open("IwalkCmodulo_Double.txt", 'r') as csvfile:  # Set file designation
         plots1 = csv.reader(csvfile)
         for row in plots1:
             y1.append(int(row[0]))  # Using data points as y-axis points
             x1.append(Counter)
+
             if row:
                 Counter += 1  # Counting rows in text file and using them for x-axis
-                		
+           
+   
+    arrX = np.array(x1)
+    arrY = np.array(y1)
+
+    print(Counter)
+    """        		
     with open(filetwo, 'r') as csvfile:  # Set file designation
         plots2 = csv.reader(csvfile)
         for row in plots2:
@@ -41,14 +54,21 @@ def plot():
             if row:
                 secCounter += 1  # Counting rows in text file and using them for x-axis
         
+    """
 
     fig, ax = plt.subplots(1, figsize=(8, 6))
   
   
     
     # plotting the graph 
-    ax.plot(x1, y1, color="r") 
-    ax.plot(x2, y2, color="g")
+    #ax.plot(arrX, arrY, 'o', color="r") 
+    ax.plot(x1, y1, 'o', color="r") 
+    #ax.xlabel("X-Axis")
+    #ax.ylabel("Y-Axis")
+    #ax.title("Set X labels in Matplotlib Plot")
+    #ax.set_xticks(np.arange(0, len(x1)+1, 250))
+
+    #ax.plot(x2, y2, color="g")
   
     # creating the Tkinter canvas 
     # containing the Matplotlib figure 
@@ -66,7 +86,11 @@ def plot():
   
     # placing the toolbar on the Tkinter window 
     canvas.get_tk_widget().pack() 
-  
+
+def close():
+    window.destroy()
+    
+     
 # the main Tkinter window 
 window = Tk() 
   
@@ -77,15 +101,23 @@ window.title('Plotting in Tkinter')
 window.geometry("500x500") 
   
 # button that displays the plot 
+
 plot_button = Button(master = window,  
                      command = plot, 
                      height = 2,  
                      width = 10, 
                      text = "Plot") 
+
+button = Button(master = window, 
+                text = 'Close the window', 
+                command = close)
+                
+button.pack(pady = 10)
   
 # place the button  
 # in main window 
 plot_button.pack() 
+
   
 # run the gui 
 window.mainloop()
